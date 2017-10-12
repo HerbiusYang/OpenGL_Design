@@ -7,42 +7,45 @@
 //
 
 
-/*  v1.1 update
- fix mainplane speed
- fix memery waste
- add aniPlanes
+/*  
+ 修复界面中飞机的速度
+ 修复了关于内存的浪费问题 
+ 添加了 关于敌对飞机的相关参数设置  
  */
 
 #include <GLUT/freeglut.h>
 #include <iostream>
-#include "map.h"
-
-void display(); //draw planes according to map
+#include "map.h"                                 //游戏界面 
+ 
+void display();                     
 void init();
-void timer(int);       //update 1. fire 2. move 3.check
-void key(unsigned char, int, int);
+void timer(int);       
+void key(unsigned char, int, int);              //游戏的判断是否终结函数
 void keyup(unsigned char, int, int);
 void reshape(int, int);
 
 map m;
-direction d = None;
+direction d = None;                             //键位的方向
 
 bool use = false;
 
 int main(int argc, char ** argv)
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
+    glutInit(&argc, argv);                                  //图形界面初始化函数调用 glut界面 
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);          //用颜色和不同模式的混合
+
+                                                            //选用GLUT_Double 是避免计算机将图形绘制的过程显示出来 完整的动画或者图形一次显示出来
+                                                            //选用GLUT_Depth  是采用深度缓存模式来完成打飞机的图形内存管理
     glutInitWindowPosition(500, 50);
-    glutInitWindowSize(500, 600);
+    glutInitWindowSize(500, 600);                           //位置与确定窗口的大小
     
-    glutCreateWindow("PlaneWar");
-    glutDisplayFunc(display);
-    glutReshapeFunc(reshape);
-    glutKeyboardFunc(key);
-    glutKeyboardUpFunc(keyup);
+    glutCreateWindow("PlaneWar");                           //创建一个 名字叫做PlaneWar的一个窗口
+    glutDisplayFunc(display);                               //注册一个display 的场景
+    glutReshapeFunc(reshape);                               //将图标不随窗口的变换而变换
+    glutKeyboardFunc(key);                                  //处理按键消息的一个函数
+    glutKeyboardUpFunc(keyup);                              //实现键盘对于按键的连续处理
     init();
-    glutTimerFunc(10, timer, 1);
+    glutTimerFunc(10, timer, 1);                            //glut中内含的时间计时器
     glutTimerFunc(500, timer, 2);
     glutTimerFunc(150, timer, 3);
     
@@ -50,21 +53,29 @@ int main(int argc, char ** argv)
     return 0;
 }
 
-void reshape(int w, int h)
+void reshape(int w, int h)                                  //对于模型进行重塑
 {
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, 5, 0, 8);
+    glViewport(0, 0, w, h);                                 //打开一个窗口系统 
+    glMatrixMode(GL_PROJECTION);                            //告诉计算机对于接下来的对于场景的控制
+                                                            /* 
+                                                               GL_PROJECTION 规定对于透视的相关函数
+                                                               GL_MODLEVIEW  规定对于模型视景的操作
+                                                               GL_TEXTURE    规定对于文理的相关操作
+                                                            */
+
+
+
+    glLoadIdentity();                                       //规定当前矩阵为单位矩阵
+    gluOrtho2D(0, 5, 0, 8);                                 //定义的剪裁面
     
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);                             //矩阵堆栈转移到模型视景进行堆栈   
+    glLoadIdentity();                                       //重塑当前模型的样子
 }
 
 void init()
 {
-    glClearColor(0, 0, 0, 0);
-    glEnable(GL_DEPTH_TEST);
+    glClearColor(0, 0, 0, 0);                               //将清除颜色设置为黑色 这个是清除函数 
+    glEnable(GL_DEPTH_TEST);                                // 启动深度测试 根据坐标的远近自动隐藏被遮住的图形
 }
 
 void timer(int v)
@@ -74,13 +85,13 @@ void timer(int v)
         //while (use)
         //    continue;
         //use = true;
-        m.update(d);
-        m.check();
+        m.update(d);                                        //
+        m.check();                                          //
         //system("cls");    //too slow
         std::cout << "score : " << m.getScore() << std::endl;
         if (m.isOvered())
         exit(0);
-        glutPostRedisplay();
+        glutPostRedisplay();                                //设置回调接口
         glutTimerFunc(10, timer, 1);
         //use = false;
     }
@@ -110,7 +121,7 @@ void timer(int v)
     }
 }
 
-void key(unsigned char c, int mx, int my)
+void key(unsigned char c, int mx, int my)   //设置键位函数
 {
     if (c == 'w')
     d = Forward;
@@ -123,7 +134,7 @@ void key(unsigned char c, int mx, int my)
     //m.move(d);
 }
 
-void keyup(unsigned char c, int x, int y)
+void keyup(unsigned char c, int x, int y)   //预防冲键函数
 {
     unsigned nc;
     if (d == None)
@@ -140,7 +151,9 @@ void keyup(unsigned char c, int x, int y)
     d = None;
 }
 
-void display()   //draw              planes : 50 * 80 ; fires : 10 * 10
+void display()   
+                                            //对于飞机和导弹的相关参数设置
+                                            //draw              planes : 50 * 80 ; fires : 10 * 10
 {
     glColor3f(1, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
