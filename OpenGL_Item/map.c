@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <iostream>
 
+
 bool findFree(const std::vector<position> & vec, int & index)  //find waste memory to reuse
 {
     for (int a = 0; a < vec.size(); a++)
@@ -31,7 +32,7 @@ bool in(int x, int y, const position & pos)
     return false;
 }
 
-bool hit(const position & pos1, const position & pos2)
+bool hit(const position & pos1, const position & pos2)  //判断是否击中函数
 {
     if (in(pos1.left, pos1.bottom, pos2))
     return true;

@@ -12,6 +12,7 @@
 
 #include <vector>
 
+
 class position;
 class map;
 
@@ -51,6 +52,7 @@ public:
 class map
 {
     friend void display();
+    friend class reveal;
 private:
     std::vector<position> aniPlanes; //record position
     std::vector<position> fires;
